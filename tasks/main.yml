@@ -16,8 +16,9 @@
     - policy
 
 - name: Enable firewalld services
-  ansible.posix.firewalld:
-    service: "{{ item }}"
+  firewalld:
+    service: "{{ item.name }}"
+    zone: "{{ item.zone | default('public') }}"
     permanent: true
     immediate: true
     state: enabled
@@ -28,10 +29,80 @@
     - firewall
     - policy
 
+- name: Disable firewalld services
+  firewalld:
+    service: "{{ item.name }}"
+    zone: "{{ item.zone | default('public') }}"
+    permanent: true
+    immediate: true
+    state: disabled
+  with_items:
+    - "{{ firewalld_services_disable }}"
+  tags:
+    - configuration
+    - firewall
+    - policy
+
+- name: Adding PortProtocol Rules
+  firewalld:
+    port: "{{ item.port }}"
+    zone: "{{ item.zone | default('public') }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  with_items:
+    - "{{ firewalld_port_protocol_rule_add }}"
+  tags:
+    - configuration
+    - firewall
+    - policy
+
+- name: Delete PortProtocol Rules
+  firewalld:
+    port: "{{ item.port }}"
+    zone: "{{ item.zone | default('public') }}"
+    permanent: true
+    immediate: true
+    state: disabled
+  with_items:
+    - "{{ firewalld_port_protocol_rule_delete }}"
+  tags:
+    - configuration
+    - firewall
+    - policy
+
+- name: Adding ipAddress Rules
+  firewalld:
+    source: "{{ item.address }}"
+    zone: "{{ item.zone | default('public') }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  with_items:
+    - "{{ firewalld_ipaddress_rule_add }}"
+  tags:
+    - configuration
+    - firewall
+    - policy
+
+- name: Delete ipAddress Rules
+  firewalld:
+    source: "{{ item.address }}"
+    zone: "{{ item.zone | default('public') }}"
+    permanent: true
+    immediate: true
+    state: disabled
+  with_items:
+    - "{{ firewalld_ipaddress_rule_delete }}"
+  tags:
+    - configuration
+    - firewall
+    - policy
+
 - name: Adding Rich Rules
-  ansible.posix.firewalld:
-    rich_rule: "rule family={{ item.family }} source address={{ item.address }} port port={{ item.port }} protocol={{ item.protocol }} {{ item.action }}}"
-    zone: "{{ item.zone }}"
+  firewalld:
+    rich_rule: "rule family={{ item.family }} source address={{ item.address }} port port={{ item.port }} protocol={{ item.protocol }} {{ item.action }}"
+    zone: "{{ item.zone | default('public') }}"
     permanent: true
     immediate: true
     state: enabled
@@ -43,27 +114,14 @@
     - policy
 
 - name: Removing Rich Rules
-  ansible.posix.firewalld:
+  firewalld:
     rich_rule: "rule family={{ item.family }} source address={{ item.address }} port port={{ item.port }} protocol={{ item.protocol }} {{ item.action }}"
-    zone: "{{ item.zone }}"
+    zone: "{{ item.zone | default('public') }}"
     permanent: true
     immediate: true
     state: disabled
   with_items:
     - "{{ firewalld_rich_rule_delete }}"
-  tags:
-    - configuration
-    - firewall
-    - policy
-
-- name: Disable firewalld services
-  ansible.posix.firewalld:
-    service: "{{ item }}"
-    permanent: true
-    immediate: true
-    state: disabled
-  with_items:
-    - "{{ firewalld_services_disable }}"
   tags:
     - configuration
     - firewall

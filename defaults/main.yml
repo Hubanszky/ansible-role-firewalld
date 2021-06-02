@@ -1,10 +1,37 @@
 ---
+# enable firewalld service
 firewalld_service_enabled: true
+
+# firewalld service name
 firewalld_service_name: 'firewalld'
+
+# desired state of firewall service
 firewalld_service_state: 'started'
+
+# firewalld package name
 firewalld_packages:
   - firewalld
+
+# list of disabled services
 firewalld_services_disable: []
+
+# list of enabled services
 firewalld_services_enable: []
+
+# list of added port_protocol rules
+firewalld_port_protocol_rule_add: []
+
+# list of deleted port_protocol rules
+firewalld_port_protocol_rule_delete: []
+
+#list of added ipaddress rules
+firewalld_ipaddress_rule_add: []
+
+#list of deleted ipaddress rules
+firewalld_ipaddress_rule_delete: []
+
+# list of added rules
 firewalld_rich_rule_add: []
+
+# list of deleted rules
 firewalld_rich_rule_delete: []
